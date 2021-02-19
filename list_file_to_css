@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+import os
+
+def change_GiB(y):
+    GiB = 2**30 #1073741824
+    y = int(y)/GiB
+    y = str(round(y,2))+" GiB"
+    return y
+
+def change_GB(y):
+    GB = 10**9 
+    y = int(y)/GB
+    y = str(round(y,2))+" GB"
+    return y
+
+def convert(x):
+
+    a1 = r"{}".format(x).replace(',', '.')
+    a2 = a1.split()
+    a2[4]=change_GB(a2[4])
+    a3 = a1.split('/', 1)
+    a4 = str(','.join(a2[:5]))
+    a5 = str(a3[1])
+    a6 = a4 + ',/' + a5+'\n'
+    return a6
+
+
+def open_table():
+    print("-----ROZPAKOWANIE DANYCH---")
+    x1 = open('Tabela1.txt').read()
+    print("-----KONWERSJA CSV---------")
+    x2 = open('Tabela3.csv', 'w+')
+    x2.write('Uprawnienia,Liczba lączy,ID użytkownika,ID grupy,Wielkość pliku,Ścieżka;\n')
+    x3 = x1.split('\n')
+    for i in x3:
+        if i == '' or ' root ' in i:
+            continue
+        else:
+            data = convert(i)
+            x2.write(data)
+
+
+def load_data():
+    os.system('find / -type f -size +100M  -print0 2>>/dev/null '
+              '| xargs -0 ls --sort=size -all   >Tabela1.txt 2>>/dev/null')
+
+
+if __name__ == '__main__':
+
+    print("\n THE PROGRAM SAVES THE LIST OF THE LARGEST FILES .CSV")
+    load_data()
+    open_table()
+    print("-----END------------")
+
